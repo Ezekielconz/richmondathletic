@@ -13,49 +13,43 @@ const API_PREFIX =
 
 const TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
 
-/* Build query string the Strapi way (arrays + shallow objects) */
+/* Convert params → Strapi query string */
 function toQuery(params = {}) {
-  const search = new URLSearchParams();
-
+  const q = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null) return;
-
+    if (value == null) return;
     if (Array.isArray(value)) {
-      value.forEach((v) => search.append(key, v));
+      value.forEach((v) => q.append(key, v));
     } else if (typeof value === 'object') {
       Object.entries(value).forEach(([k, v]) =>
-        search.append(`${key}[${k}]`, v)
+        q.append(`${key}[${k}]`, v)
       );
     } else {
-      search.append(key, value);
+      q.append(key, value);
     }
   });
-
-  return search.toString();
+  return q.toString();
 }
 
 function buildURL(path = '', params = {}) {
   const query = toQuery(params);
-
-  // Ensure single leading slash, but DO NOT double-prefix
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const url =
-    API_PREFIX && cleanPath.startsWith(API_PREFIX)
-      ? `${API_URL}${cleanPath}`
-      : `${API_URL}${API_PREFIX}${cleanPath}`;
-
+  const clean  = path.startsWith('/') ? path : `/${path}`;
+  const url    =
+    API_PREFIX && clean.startsWith(API_PREFIX)
+      ? `${API_URL}${clean}`
+      : `${API_URL}${API_PREFIX}${clean}`;
   return query ? `${url}?${query}` : url;
 }
 
 /* ---------------------------------------------------------- */
-export async function fetchStrapi(path, opts = {}) {
+export async function fetchStrapi(path, options = {}) {
   const {
     params = {},
     method = 'GET',
     headers = {},
-    next = { revalidate: 60 * 60 * 4 }, // 4 hours ISR
+    next   = { revalidate: 60 * 60 * 4 }, // 4 h ISR
     ...rest
-  } = opts;
+  } = options;
 
   const url = buildURL(path, params);
   if (process.env.NODE_ENV === 'development') console.log('[Strapi] →', url);
@@ -71,6 +65,13 @@ export async function fetchStrapi(path, opts = {}) {
     ...rest,
   });
 
+  /* Gracefully handle “route missing” while building */
+  if (res.status === 404) {
+    if (process.env.NODE_ENV === 'development')
+      console.warn('[Strapi] 404 – returning empty data for', url);
+    return { data: [] };
+  }
+
   if (!res.ok) {
     console.error(`Strapi fetch failed [${res.status}]: ${res.statusText}`);
     throw new Error('Failed to fetch Strapi data');
@@ -79,7 +80,7 @@ export async function fetchStrapi(path, opts = {}) {
   return res.json();
 }
 
-/* Turn a Strapi media object ➜ absolute URL */
+/* Absolute URL for media */
 export function getMediaURL(media) {
   if (!media?.data?.attributes?.url) return null;
   const url = media.data.attributes.url;

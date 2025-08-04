@@ -2,6 +2,9 @@ import SponsorsSection from '@/components/SponsorsSection';
 import { fetchStrapi, getMediaURL } from '@/lib/strapi';
 import styles from '@/styles/sponsorsPage.module.css';
 
+/* Render on demand so the build never fails */
+export const dynamic = 'force-dynamic';
+
 /* Map enum ➜ heading */
 const LEVEL_LABELS = {
   'major-club':    'Major Club Sponsor',
@@ -21,21 +24,16 @@ const LEVEL_ORDER = [
 ];
 
 async function getSponsorsGrouped() {
-  const data = await fetchStrapi('/sponsors', {
-    params: {
-      populate: 'logo',
-      sort: ['level', 'sortOrder'],
-    },
-    next: { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
+  const json = await fetchStrapi('/sponsors', {
+    params: { populate: 'logo', sort: ['level', 'sortOrder'] },
+    next:   { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
   });
 
   const groups = {};
-  data.data.forEach((item) => {
+  json.data.forEach((item) => {
     const { name, url, blurb, level } = item.attributes;
     const logo = getMediaURL(item.attributes.logo);
-
-    if (!groups[level]) groups[level] = [];
-    groups[level].push({ name, url, blurb, logo });
+    (groups[level] ||= []).push({ name, url, blurb, logo });
   });
 
   return LEVEL_ORDER
@@ -46,12 +44,15 @@ async function getSponsorsGrouped() {
     }));
 }
 
-export const metadata = {
-  title: 'Our Sponsors · Richmond Athletic FC',
-};
+export const metadata = { title: 'Our Sponsors · Richmond Athletic FC' };
 
 export default async function SponsorsPage() {
-  const sponsorGroups = await getSponsorsGrouped();
+  let sponsorGroups = [];
+  try {
+    sponsorGroups = await getSponsorsGrouped();
+  } catch (e) {
+    console.error('SponsorsPage →', e);
+  }
 
   return (
     <main className={styles.page}>
@@ -61,16 +62,24 @@ export default async function SponsorsPage() {
           Some of the most important people in our club are our sponsors. Their
           generosity keeps us thriving on and off the pitch. If you’re
           interested in joining our sponsor family, contact&nbsp;
-          <a href="mailto:sponsorship@richmondathletic.co.nz">
-            Ged Clark
-          </a>{' '}
+          <a href="mailto:sponsorship@richmondathletic.co.nz">Ged Clark</a>{' '}
           for our sponsorship packages.
         </p>
       </header>
 
-      {sponsorGroups.map((g) => (
-        <SponsorsSection key={g.level} level={g.level} sponsors={g.sponsors} />
-      ))}
+      {sponsorGroups.length ? (
+        sponsorGroups.map((g) => (
+          <SponsorsSection
+            key={g.level}
+            level={g.level}
+            sponsors={g.sponsors}
+          />
+        ))
+      ) : (
+        <section className={styles.hero}>
+          <p>We’re still finalising sponsor details—check back soon!</p>
+        </section>
+      )}
     </main>
   );
 }
