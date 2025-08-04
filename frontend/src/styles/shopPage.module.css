@@ -1,0 +1,29 @@
+.page { background: #fafafa; }
+
+.hero {
+  padding: 4rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.hero h1 {
+  font-family: var(--font-oswald), sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+}
+
+.hero p { line-height: 1.5; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto 4rem;
+  padding: 0 1.5rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
