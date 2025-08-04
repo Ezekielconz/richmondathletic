@@ -1,0 +1,38 @@
+/* -------- Layout container -------- */
+.hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  min-height: 50vh;           /* adjust to taste */
+}
+
+/* -------- Left column -------- */
+.left {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.message {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: #111;
+  margin: 0;
+}
+
+/* -------- Right column -------- */
+.right {
+  position: relative;         /* allows Image fill */
+  background: #880A0A;        /* fallback maroon */
+  overflow: hidden;
+}
+
+.heroImg {
+  object-fit: cover;
+  object-position: center;
+}

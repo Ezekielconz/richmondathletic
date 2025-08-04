@@ -1,0 +1,65 @@
+.footer {
+  background: #212121;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+  padding: 2.5rem 1.5rem;
+  font-family: var(--font-oswald), sans-serif;
+  font-weight: 300;                 /* extra-light base */
+  line-height: 1.4;
+}
+
+.col {
+  flex: 1 1 240px;                  /* three even columns */
+  max-width: 320px;
+}
+
+/* ----- Address ----- */
+.address {
+  font-style: normal;               /* remove italics */
+  margin: 0 0 1rem;
+}
+
+/* ----- Social icons ----- */
+.social {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.social a img {
+  display: block;
+}
+
+/* ----- Contacts & credit ----- */
+.contact,
+.credit {
+  margin: 0 0 1.25rem;
+  font-weight: 300;
+  font-size: 0.85rem;
+}
+
+/* local-only anchor styling */
+.footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ----- Responsive stack ----- */
+@media (max-width: 700px) {
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+  .col {
+    max-width: none;
+  }
+  .social {
+    justify-content: center;
+  }
+}

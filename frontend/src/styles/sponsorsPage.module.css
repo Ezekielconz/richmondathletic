@@ -1,0 +1,38 @@
+/* ──────────────────────────────────────────────
+   Sponsors index page (intro hero + sections)
+   ────────────────────────────────────────────── */
+
+.page {
+  background: #f7f7f7;
+}
+
+/* ----- Intro / hero block ----- */
+.hero {
+  padding: 5rem 1.5rem 3rem;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-family: var(--font-oswald), sans-serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  text-transform: uppercase;
+  margin: 0 0 1.5rem;
+}
+
+.hero p {
+  font-family: var(--font-geist-sans), sans-serif;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.hero a {
+  color: #ea2225;              /* club red */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero a:hover {
+  text-decoration: underline;
+}

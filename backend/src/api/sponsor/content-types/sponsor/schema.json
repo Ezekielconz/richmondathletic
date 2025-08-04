@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sponsors",
+  "info": {
+    "singularName": "sponsor",
+    "pluralName": "sponsors",
+    "displayName": "Sponsor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "WebsiteURL": {
+      "type": "string"
+    },
+    "Blurb": {
+      "type": "text"
+    },
+    "Logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Level": {
+      "type": "enumeration",
+      "enum": [
+        "major-club",
+        "club",
+        "senior-team",
+        "youth-junior",
+        "funding-trust"
+      ]
+    }
+  }
+}
