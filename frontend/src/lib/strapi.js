@@ -81,8 +81,15 @@ export async function fetchStrapi(path, options = {}) {
 }
 
 /* Absolute URL for media */
-export function getMediaURL(media) {
-  if (!media?.data?.attributes?.url) return null;
-  const url = media.data.attributes.url;
+export function getMediaURL(mediaLike) {
+  // Accept   {data:{attributes:{url}}}   {data:{url}}   or   {url}
+  const maybeData = mediaLike?.data ?? mediaLike;
+  const url =
+    /* v4 */ maybeData?.attributes?.url ??
+    /* v5 */ maybeData?.url;
+
+  if (!url) return null;
+
+  // Already absolute? forward as-is, otherwise prefix with API host
   return url.startsWith('http') ? url : `${API_URL}${url}`;
 }

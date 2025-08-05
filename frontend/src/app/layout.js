@@ -1,61 +1,55 @@
 // frontend/src/app/layout.js
 import { Geist, Geist_Mono, Oswald } from 'next/font/google';
 import './globals.css';
+
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import { fetchStrapi, getMediaURL } from '@/lib/strapi';
 
-// Fonts (unchanged)
+/* ─────────────────────  Fonts  ───────────────────── */
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 const oswald    = Oswald({
   variable: '--font-oswald',
   subsets: ['latin'],
-  weight: ['400','500','600','700'],
+  weight : ['400', '500', '600', '700'],
   display: 'swap',
 });
 
+/* ─────────────────────  <head> metadata  ───────────────────── */
 export const metadata = {
-  title: 'Richmond Athletic FC',
+  title      : 'Richmond Athletic FC',
   description: 'Official club site',
 };
 
+/* ─────────────────────  Root layout  ───────────────────── */
 export default async function RootLayout({ children }) {
-  // fallback logo
-  let logo = '/logo.png';
+  /* 1️⃣  Fallback logo bundled in /public  */
+  let logoUrl = '/logo.png';
 
-  // the ONE slug Strapi uses for single-types is the singular API ID:
-  const endpoint = '/site-setting';
-
-  // build & fetch
-  const url = `${process.env.NEXT_PUBLIC_STRAPI_API_URL?.replace(/\/$/, '') || 'http://localhost:1337'}${process.env.NEXT_PUBLIC_STRAPI_API_PREFIX ?? '/api'}${endpoint}?populate=logo`;
-  console.log('[Strapi] fetching logo from:', url);
-
-  let json;
   try {
-    json = await fetchStrapi(endpoint, {
+    /* 2️⃣  Pull the logo from Strapi (single type) */
+    const { data: site } = await fetchStrapi('/site-setting', {
       params: { populate: 'logo' },
-      next:   { revalidate: 60 * 60 * 12, tags: ['site-settings'] },
+      next  : { revalidate: 60 * 60 * 12, tags: ['site-settings'] },
     });
-    console.log('[Strapi] raw response:', json);
-  } catch (e) {
-    console.warn('[Strapi] fetchStrapi failed:', e.message);
+
+    const cmsLogo = getMediaURL(site?.logo);
+    if (cmsLogo) logoUrl = cmsLogo;
+  } catch (err) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[layout] Strapi logo fetch failed:', err.message);
+    }
   }
 
-  // guard every property before accessing
-  const logoAttr = json?.data?.attributes?.logo;
-  if (logoAttr) {
-    const cmsUrl = getMediaURL(logoAttr);
-    if (cmsUrl) logo = cmsUrl;
-  }
-
+  /* 3️⃣  Pass **logoUrl** (not “logo”) down to NavBar  */
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable}`}
     >
       <body className="antialiased">
-        <NavBar logo={logo} />
+        <NavBar logoUrl={logoUrl} />
         <main>{children}</main>
         <Footer />
       </body>
