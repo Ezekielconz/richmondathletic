@@ -1,25 +1,42 @@
+/* styles/badgeInfo.module.css */
+
 .badgeSection {
   background: #EA2225;
   padding: 3rem 1.5rem;
   color: white;
+
+  /* center everything inside this red section */
+  display: flex;
+  justify-content: center;   /* horizontal centering */
+  align-items: center;       /* vertical centering */
 }
 
 .container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-wrap: nowrap;         /* keep all badges in one row */
+  justify-content: center;   /* center badges row horizontally */
+  align-items: stretch;      /* force each badge to match height */
   gap: 3rem;
   max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;               /* let it shrink/grow with section */
+  overflow-x: auto;          /* allow scroll on narrow screens */
 }
 
 .badgeItem {
+  display: flex;
+  flex-direction: column;    /* stack icon, title, caption */
+  align-items: center;       /* center them horizontally */
   text-align: center;
   max-width: 180px;
 }
 
 .icon {
+  width: 60px;               /* fixed box for every icon */
+  height: 60px;
   margin-bottom: 0.5rem;
+
+  object-fit: contain;       /* preserve aspect ratio */
+  object-position: center;   /* center the image within its box */
 }
 
 .title {
