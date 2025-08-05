@@ -1,68 +1,160 @@
 /* styles/navbar.module.css */
 
+/* ---------- Logo “bounce” keyframes ---------- */
+@keyframes logo-bounce {
+  0%, 100%   { transform: translateY(0); }
+  50%        { transform: translateY(-10px); }
+}
+
 /* ---------- Main bar ---------- */
 .nav {
+  position: sticky;
+  top: 0;
   display: flex;
-  align-items: center;         /* keep your links vertically centered */
+  align-items: center;
   justify-content: space-between;
 
   height: 75px;
-  padding: 0 1.5rem;           /* no top/bottom padding */
-
-  background: #EA2225;         /* club red */
+  padding: 0 1.5rem;
+  background: #EA2225;
   color: #fff;
-
-  position: sticky;
-  top: 0;
-
-  /* allow the logo to peek out below */
   overflow: visible;
+  z-index: 100;
 }
 
-/* ---------- Logo ---------- */
+/* ---------- Logo (animated) ---------- */
 .logoLink {
   position: relative;
-  bottom: -20px;               /* drop the 80×80 logo halfway */
-  z-index: 10;
-
+  bottom: -20px;               /* half of the 80px logo */
+  z-index: 110;
   display: flex;
   align-items: center;
   text-decoration: none;
   color: inherit;
+
+  animation: logo-bounce 3s ease-in-out infinite;
 }
 
-/* ---------- Links ---------- */
+/* ---------- Hamburger toggle (hidden on desktop) ---------- */
+.menuToggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  z-index: 120;
+}
+.menuToggle span {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 4px 0;
+  background: #fff;
+  transition: background 0.3s ease;
+}
+
+/* ---------- Links container ---------- */
 .menu {
   display: flex;
-  gap: 3rem;                   /* lots of space between items */
+  gap: 3rem;
   align-items: center;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* All nav links (including the special button) use Oswald */
+/* ---------- Base link styling ---------- */
 .menu a {
   color: #fff;
   font-family: var(--font-oswald), sans-serif;
   font-weight: 500;
   text-decoration: none;
-  transition: opacity .15s;
-
-  text-transform: uppercase;   /* force uppercase */
-  letter-spacing: 0.1em;       /* added letter spacing */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.3s ease, opacity 0.15s;
 }
 .menu a:hover {
-  opacity: .75;
+  opacity: 0.75;
 }
 
-/* ---------- Special registration button ---------- */
+/* ---------- Underline animation for main links ---------- */
+.menu a:not(.registrationBtn) {
+  position: relative;
+}
+.menu a:not(.registrationBtn)::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #fff;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+.menu a:not(.registrationBtn):hover::after,
+.menu a:not(.registrationBtn).active::after {
+  width: 100%;
+  left: 0;
+}
+.menu a:not(.registrationBtn).active {
+  opacity: 1;
+}
+
+/* ---------- Registration button ---------- */
 .registrationBtn {
   background: #000;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   font-weight: 600;
-
-  text-transform: uppercase;   /* keep consistent */
-  letter-spacing: 0.1em;       /* add letter spacing here too */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition:
+    transform 0.2s ease,
+    background 0.3s ease,
+    color 0.3s ease,
+    opacity 0.15s;
+  transform-origin: center;
 }
 .registrationBtn:hover {
-  opacity: .85;
+  transform: translateY(-2px) scale(1.05);
+  opacity: 0.85;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+.registrationBtn:active {
+  transform: translateY(0) scale(0.98);
+}
+.registrationBtn.active {
+  background: #fff;
+  color: #EA2225;
+}
+
+/* ---------- Mobile styles ---------- */
+@media (max-width: 768px) {
+  .menuToggle {
+    display: block;
+  }
+
+  .menu {
+    position: absolute;
+    top: 75px;                              /* same as .nav height */
+    right: 0;
+    width: 200px;
+    height: calc(100vh - 75px);
+    background: #EA2225;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .menu.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .menu a {
+    letter-spacing: 0.05em;
+  }
 }

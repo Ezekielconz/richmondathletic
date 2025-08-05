@@ -1,3 +1,5 @@
+/* styles/hero.module.css */
+
 /* -------- Layout container -------- */
 .hero {
   display: grid;
@@ -25,9 +27,9 @@
   margin: 0;
 }
 
-/* -------- Right column -------- */
-.right {
-  position: relative;         /* allows Image fill */
+/* -------- Image columns -------- */
+.imageContainer {
+  position: relative;         /* <-- needed for Image fill */
   background: #880A0A;        /* fallback maroon */
   overflow: hidden;
 }
@@ -35,4 +37,11 @@
 .heroImg {
   object-fit: cover;
   object-position: center;
+}
+
+/* -------- Fallback block when no image -------- */
+.fallback {
+  width: 100%;
+  height: 100%;
+  background: #880A0A;
 }

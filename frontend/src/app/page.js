@@ -1,14 +1,16 @@
+// src/app/page.js
 import Hero      from '@/components/Hero';
 import BadgeInfo from '@/components/BadgeInfo';
 import InfoSection from '@/components/InfoSection';
+import { getHeroSettings } from '@/lib/strapi';
 
-export default function Home() {
+export default async function Home() {
+  const { leftImage, rightImage } = await getHeroSettings();
+
   return (
     <>
-      <Hero imageSrc="/hero.jpg" />
+      <Hero leftImage={leftImage} rightImage={rightImage} />
       <BadgeInfo />
-
-      {/* 1️⃣ image left  */}
       <InfoSection
         index={0}
         imageSrc="/photos/academy.jpg"
@@ -16,7 +18,6 @@ export default function Home() {
         body="Developing young talent with certified coaches and a proven curriculum."
       />
 
-      {/* 2️⃣ image right */}
       <InfoSection
         index={1}
         imageSrc="/photos/community.jpg"
@@ -24,7 +25,6 @@ export default function Home() {
         body="From charity events to local school programs, giving back is at our core."
       />
 
-      {/* 3️⃣ image left again */}
       <InfoSection
         index={2}
         imageSrc="/photos/facilities.jpg"

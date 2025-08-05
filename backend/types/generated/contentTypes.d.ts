@@ -438,6 +438,39 @@ export interface ApiBadgeBadge extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiHeroSettingHeroSetting extends Struct.SingleTypeSchema {
+  collectionName: 'hero_settings';
+  info: {
+    displayName: 'Hero Setting';
+    pluralName: 'hero-settings';
+    singularName: 'hero-setting';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    HeroImageLeft: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    HeroImageRight: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::hero-setting.hero-setting'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiInfoSectionInfoSection extends Struct.CollectionTypeSchema {
   collectionName: 'info_sections';
   info: {
@@ -1073,6 +1106,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::badge.badge': ApiBadgeBadge;
+      'api::hero-setting.hero-setting': ApiHeroSettingHeroSetting;
       'api::info-section.info-section': ApiInfoSectionInfoSection;
       'api::product.product': ApiProductProduct;
       'api::site-setting.site-setting': ApiSiteSettingSiteSetting;

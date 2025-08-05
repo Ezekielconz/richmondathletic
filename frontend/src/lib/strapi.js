@@ -34,20 +34,22 @@ function toQuery(params = {}) {
 function buildURL(path = '', params = {}) {
   const query = toQuery(params);
   const clean  = path.startsWith('/') ? path : `/${path}`;
-  const url    =
+  const url =
     API_PREFIX && clean.startsWith(API_PREFIX)
       ? `${API_URL}${clean}`
       : `${API_URL}${API_PREFIX}${clean}`;
   return query ? `${url}?${query}` : url;
 }
 
-/* ---------------------------------------------------------- */
+/**
+ * Low‐level fetch helper for any Strapi endpoint
+ */
 export async function fetchStrapi(path, options = {}) {
   const {
     params = {},
     method = 'GET',
     headers = {},
-    next   = { revalidate: 60 * 60 * 4 }, // 4 h ISR
+    next   = { revalidate: 60 * 60 * 4 }, // 4h ISR
     ...rest
   } = options;
 
@@ -65,11 +67,11 @@ export async function fetchStrapi(path, options = {}) {
     ...rest,
   });
 
-  /* Gracefully handle “route missing” while building */
+  // If your single‐type hasn't been created yet, return empty data
   if (res.status === 404) {
     if (process.env.NODE_ENV === 'development')
       console.warn('[Strapi] 404 – returning empty data for', url);
-    return { data: [] };
+    return { data: null };
   }
 
   if (!res.ok) {
@@ -80,16 +82,46 @@ export async function fetchStrapi(path, options = {}) {
   return res.json();
 }
 
-/* Absolute URL for media */
+/**
+ * Turn any Strapi media field into an absolute URL (v4 or v5)
+ */
 export function getMediaURL(mediaLike) {
-  // Accept   {data:{attributes:{url}}}   {data:{url}}   or   {url}
   const maybeData = mediaLike?.data ?? mediaLike;
   const url =
-    /* v4 */ maybeData?.attributes?.url ??
-    /* v5 */ maybeData?.url;
+    // v4
+    maybeData?.attributes?.url ??
+    // v5
+    maybeData?.url;
 
   if (!url) return null;
-
-  // Already absolute? forward as-is, otherwise prefix with API host
   return url.startsWith('http') ? url : `${API_URL}${url}`;
+}
+
+/* ──────────────────────────────────────────────
+   High-level helpers for your single‐types
+   ────────────────────────────────────────────── */
+
+/**
+ * Fetch your “Hero Settings” single type,
+ * pull in both HeroImageLeft + HeroImageRight,
+ * and return { leftImage, rightImage } as absolute URLs.
+ */
+export async function getHeroSettings() {
+  const res = await fetchStrapi('/hero-setting', {
+    params: {
+      // either populate all, or explicitly these two fields
+      populate: '*' 
+      // or
+      // populate: { HeroImageLeft: '*', HeroImageRight: '*' }
+    },
+  });
+
+  // Strapi v5 single‐type: fields are on res.data
+  // Strapi v4: they'd be on res.data.attributes
+  const entry = res.data?.attributes ?? res.data ?? {};
+
+  return {
+    leftImage: getMediaURL(entry.HeroImageLeft),
+    rightImage: getMediaURL(entry.HeroImageRight),
+  };
 }

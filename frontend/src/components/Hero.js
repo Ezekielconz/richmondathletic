@@ -1,15 +1,10 @@
-'use client';
-
+// src/components/Hero.js
 import Image from 'next/image';
 import styles from '../styles/hero.module.css';
 
-/**
- * @param {string} [imageSrc] Optional path to a hero image in /public
- */
-export default function Hero({ imageSrc }) {
+export default function Hero({ leftImage, rightImage }) {
   return (
     <section className={styles.hero}>
-      {/* -------- Left (white) -------- */}
       <div className={styles.left}>
         <h1 className={styles.message}>
           SUPPORT<br />
@@ -21,17 +16,32 @@ export default function Hero({ imageSrc }) {
         </h1>
       </div>
 
-      {/* -------- Right (image or maroon) -------- */}
-      <div className={styles.right}>
-        {imageSrc && (
+      <div className={styles.imageContainer}>
+        {leftImage ? (
           <Image
-            src={imageSrc}
-            alt="Richmond Athletic in action"
+            src={leftImage}
+            alt="Hero left"
             fill
-            sizes="(min-width: 768px) 50vw, 100vw"
+            sizes="(min-width: 768px) 33vw, 100vw"
             className={styles.heroImg}
             priority
           />
+        ) : (
+          <div className={styles.fallback} />
+        )}
+      </div>
+
+      <div className={styles.imageContainer}>
+        {rightImage ? (
+          <Image
+            src={rightImage}
+            alt="Hero right"
+            fill
+            sizes="(min-width: 768px) 33vw, 100vw"
+            className={styles.heroImg}
+          />
+        ) : (
+          <div className={styles.fallback} />
         )}
       </div>
     </section>
