@@ -1,48 +1,24 @@
 // src/components/Hero.js
-import Image from 'next/image';
 import styles from '../styles/hero.module.css';
 
 export default function Hero({ leftImage, rightImage }) {
   return (
-    <section className={styles.hero}>
-      <div className={styles.left}>
+    <section
+      className={styles.hero}
+      style={{
+        "--left-image":  leftImage  ? `url(${leftImage})`  : "none",
+        "--right-image": rightImage ? `url(${rightImage})` : "none",
+      }}
+    >
+      <div className={styles.textContainer}>
         <h1 className={styles.message}>
-          SUPPORT<br />
-          TOGETHER<br />
-          RESPECT<br />
-          INTEGRITY<br />
-          VISION<br />
-          EVERYONE!
+          <span className={styles.glassWord}>SUPPORT</span><br/>
+          <span className={styles.glassWord}>TOGETHER</span><br/>
+          <span className={styles.glassWord}>RESPECT</span><br/>
+          <span className={styles.glassWord}>INTEGRITY</span><br/>
+          <span className={styles.glassWord}>VISION</span><br/>
+          <span className={styles.glassWord}>EVERYONE!</span>
         </h1>
-      </div>
-
-      <div className={styles.imageContainer}>
-        {leftImage ? (
-          <Image
-            src={leftImage}
-            alt="Hero left"
-            fill
-            sizes="(min-width: 768px) 33vw, 100vw"
-            className={styles.heroImg}
-            priority
-          />
-        ) : (
-          <div className={styles.fallback} />
-        )}
-      </div>
-
-      <div className={styles.imageContainer}>
-        {rightImage ? (
-          <Image
-            src={rightImage}
-            alt="Hero right"
-            fill
-            sizes="(min-width: 768px) 33vw, 100vw"
-            className={styles.heroImg}
-          />
-        ) : (
-          <div className={styles.fallback} />
-        )}
       </div>
     </section>
   );
