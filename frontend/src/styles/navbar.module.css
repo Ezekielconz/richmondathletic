@@ -1,35 +1,40 @@
+/* styles/navbar.module.css */
+
 /* ---------- Main bar ---------- */
 .nav {
   display: flex;
-  align-items: center;
+  align-items: center;         /* keep your links vertically centered */
   justify-content: space-between;
-  padding: 0rem 1.5rem;
-  background: #EA2225;        /* club red */
+
+  height: 75px;
+  padding: 0 1.5rem;           /* no top/bottom padding */
+
+  background: #EA2225;         /* club red */
   color: #fff;
+
   position: sticky;
   top: 0;
+
+  /* allow the logo to peek out below */
+  overflow: visible;
 }
 
-/* ---------- Logo + club name ---------- */
+/* ---------- Logo ---------- */
 .logoLink {
+  position: relative;
+  bottom: -20px;               /* drop the 80×80 logo halfway */
+  z-index: 10;
+
   display: flex;
-  gap: 0.5rem;
   align-items: center;
   text-decoration: none;
   color: inherit;
-  font-weight: 600;
-  letter-spacing: .03em;
-}
-
-.clubName {
-  font-size: 1rem;
-  white-space: nowrap;
 }
 
 /* ---------- Links ---------- */
 .menu {
   display: flex;
-  gap: 1rem;
+  gap: 3rem;                   /* lots of space between items */
   align-items: center;
 }
 
@@ -40,8 +45,10 @@
   font-weight: 500;
   text-decoration: none;
   transition: opacity .15s;
-}
 
+  text-transform: uppercase;   /* force uppercase */
+  letter-spacing: 0.1em;       /* added letter spacing */
+}
 .menu a:hover {
   opacity: .75;
 }
@@ -52,8 +59,10 @@
   padding: 0.5rem 1rem;
   border-radius: 4px;
   font-weight: 600;
-}
 
+  text-transform: uppercase;   /* keep consistent */
+  letter-spacing: 0.1em;       /* add letter spacing here too */
+}
 .registrationBtn:hover {
   opacity: .85;
 }

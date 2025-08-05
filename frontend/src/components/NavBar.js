@@ -12,13 +12,17 @@ export default function NavBar({ logoUrl = '' }) {
   return (
     <header className={styles.nav}>
       <Link href="/" className={styles.logoLink}>
-        {/* Guard against empty strings to avoid a 404 request from <Image/> */}
-      {logoUrl && (
-        <Image src={logoUrl} alt="Richmond AFC logo" width={40} height={40} priority />
-      )}
+        {logoUrl && (
+          <Image
+            src={logoUrl}
+            alt="Richmond AFC logo"
+            width={80}
+            height={80}
+            priority
+          />
+        )}
       </Link>
 
-      {/* ----  Links ---- */}
       <nav className={styles.menu}>
         <Link href="/">Home</Link>
         <Link href="/club">Club</Link>
