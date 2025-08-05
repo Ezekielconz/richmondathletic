@@ -1,6 +1,6 @@
-import SponsorsSection from '@/components/SponsorsSection';
+import SponsorsSection             from '@/components/SponsorsSection';
 import { fetchStrapi, getMediaURL } from '@/lib/strapi';
-import styles from '@/styles/sponsorsPage.module.css';
+import styles                       from '@/styles/sponsorsPage.module.css';
 
 /* Render on demand so the build never fails */
 export const dynamic = 'force-dynamic';
@@ -14,7 +14,7 @@ const LEVEL_LABELS = {
   'funding-trust': 'Funding Foundations & Trusts',
 };
 
-/* Display order */
+/* Desired display order */
 const LEVEL_ORDER = [
   'major-club',
   'club',
@@ -25,12 +25,15 @@ const LEVEL_ORDER = [
 
 async function getSponsorsGrouped() {
   const json = await fetchStrapi('/sponsors', {
-    params: { populate: 'logo', sort: ['level', 'sortOrder'] },
-    next:   { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
+    params: {
+      populate: 'logo',
+      sort: 'level:asc,sortOrder:asc', // ✅ valid multi-sort string
+    },
+    next: { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
   });
 
   const groups = {};
-  json.data.forEach((item) => {
+  (json.data || []).forEach((item) => {
     const { name, url, blurb, level } = item.attributes;
     const logo = getMediaURL(item.attributes.logo);
     (groups[level] ||= []).push({ name, url, blurb, logo });
@@ -44,14 +47,16 @@ async function getSponsorsGrouped() {
     }));
 }
 
-export const metadata = { title: 'Our Sponsors · Richmond Athletic FC' };
+export const metadata = {
+  title: 'Our Sponsors · Richmond Athletic FC',
+};
 
 export default async function SponsorsPage() {
   let sponsorGroups = [];
   try {
     sponsorGroups = await getSponsorsGrouped();
-  } catch (e) {
-    console.error('SponsorsPage →', e);
+  } catch (err) {
+    console.error('SponsorsPage →', err);
   }
 
   return (

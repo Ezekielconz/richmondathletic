@@ -16,11 +16,15 @@ const TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
 /* Convert params → Strapi query string */
 function toQuery(params = {}) {
   const q = new URLSearchParams();
+
   Object.entries(params).forEach(([key, value]) => {
     if (value == null) return;
+
     if (Array.isArray(value)) {
+      // e.g. { sort: ['level:asc', 'sortOrder:asc'] }
       value.forEach((v) => q.append(key, v));
     } else if (typeof value === 'object') {
+      // e.g. populate: { logo: '*' }
       Object.entries(value).forEach(([k, v]) =>
         q.append(`${key}[${k}]`, v)
       );
@@ -28,12 +32,13 @@ function toQuery(params = {}) {
       q.append(key, value);
     }
   });
+
   return q.toString();
 }
 
 function buildURL(path = '', params = {}) {
   const query = toQuery(params);
-  const clean  = path.startsWith('/') ? path : `/${path}`;
+  const clean = path.startsWith('/') ? path : `/${path}`;
   const url =
     API_PREFIX && clean.startsWith(API_PREFIX)
       ? `${API_URL}${clean}`
@@ -49,7 +54,7 @@ export async function fetchStrapi(path, options = {}) {
     params = {},
     method = 'GET',
     headers = {},
-    next   = { revalidate: 60 * 60 * 4 }, // 4h ISR
+    next = { revalidate: 60 * 60 * 4 }, // 4 h ISR
     ...rest
   } = options;
 
@@ -67,8 +72,8 @@ export async function fetchStrapi(path, options = {}) {
     ...rest,
   });
 
-  // If your single‐type hasn't been created yet, return empty data
   if (res.status === 404) {
+    // single-type not created yet → return empty
     if (process.env.NODE_ENV === 'development')
       console.warn('[Strapi] 404 – returning empty data for', url);
     return { data: null };
@@ -98,26 +103,14 @@ export function getMediaURL(mediaLike) {
 }
 
 /* ──────────────────────────────────────────────
-   High-level helpers for your single‐types
+   Example higher-level helpers
    ────────────────────────────────────────────── */
 
-/**
- * Fetch your “Hero Settings” single type,
- * pull in both HeroImageLeft + HeroImageRight,
- * and return { leftImage, rightImage } as absolute URLs.
- */
 export async function getHeroSettings() {
   const res = await fetchStrapi('/hero-setting', {
-    params: {
-      // either populate all, or explicitly these two fields
-      populate: '*' 
-      // or
-      // populate: { HeroImageLeft: '*', HeroImageRight: '*' }
-    },
+    params: { populate: '*' },
   });
 
-  // Strapi v5 single‐type: fields are on res.data
-  // Strapi v4: they'd be on res.data.attributes
   const entry = res.data?.attributes ?? res.data ?? {};
 
   return {
@@ -126,21 +119,13 @@ export async function getHeroSettings() {
   };
 }
 
-/**
- * Fetch all badges, sorted by Order, with their icons populated.
- */
 export async function getBadgeItems() {
-  // Strapi collection endpoint is plural of your model name:
   const res = await fetchStrapi('/badges', {
-    params: {
-      populate: 'Icon',        // pull in the media field
-      sort: ['Order:asc'],     // ascending by the number field
-    },
+    params: { populate: 'Icon', sort: 'Order:asc' },
   });
 
-  // res.data is an array of entries in v4/v5
   return (res.data || []).map((item) => {
-    const attrs = item.attributes || {};
+    const attrs = item.attributes ?? item;
     return {
       src: getMediaURL(attrs.Icon),
       title: attrs.Title,

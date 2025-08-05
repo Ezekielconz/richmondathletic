@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import Link   from 'next/link';
 import styles from '../styles/sponsorsSection.module.css';
 
 const PLACEHOLDER = '/sponsors/placeholder.svg';
@@ -17,7 +17,7 @@ export default function SponsorsSection({ level, sponsors }) {
             {s.url ? (
               <Link href={s.url} target="_blank" rel="noopener">
                 <Image
-                  src={s.logo ?? PLACEHOLDER}
+                  src={s.logo || PLACEHOLDER}
                   alt={s.name}
                   fill
                   sizes="(min-width:768px) 200px, 40vw"
@@ -27,7 +27,7 @@ export default function SponsorsSection({ level, sponsors }) {
               </Link>
             ) : (
               <Image
-                src={s.logo ?? PLACEHOLDER}
+                src={s.logo || PLACEHOLDER}
                 alt={s.name}
                 fill
                 sizes="(min-width:768px) 200px, 40vw"
