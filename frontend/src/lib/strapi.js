@@ -125,3 +125,26 @@ export async function getHeroSettings() {
     rightImage: getMediaURL(entry.HeroImageRight),
   };
 }
+
+/**
+ * Fetch all badges, sorted by Order, with their icons populated.
+ */
+export async function getBadgeItems() {
+  // Strapi collection endpoint is plural of your model name:
+  const res = await fetchStrapi('/badges', {
+    params: {
+      populate: 'Icon',        // pull in the media field
+      sort: ['Order:asc'],     // ascending by the number field
+    },
+  });
+
+  // res.data is an array of entries in v4/v5
+  return (res.data || []).map((item) => {
+    const attrs = item.attributes || {};
+    return {
+      src: getMediaURL(attrs.Icon),
+      title: attrs.Title,
+      caption: attrs.Caption,
+    };
+  });
+}
