@@ -1,93 +1,111 @@
-/* styles/hero.module.css */
+/* ------------------------------ */
+/* HERO WRAPPER                   */
+/* ------------------------------ */
+.hero{
+  position:relative;
+  overflow:hidden;
+  min-height:50vh;
+  background:#880A0A;
 
-/* —— Hero wrapper + two clipped-image layers —— */
-.hero {
-  position: relative;
-  overflow: hidden;
-  min-height: 50vh;
-  background-color: #880A0A;
+  /* base brand reds */
+  --tint:rgba(234,34,37,.9);            /* overlay for photography */
+  --tint-strong:rgba(234,34,37,1);      /* solid red for first letters */
+
+  /* gradient helpers that use --tint */
+  --left-tinted:linear-gradient(135deg,var(--tint) 0 100%),var(--left-image);
+  --right-tinted:linear-gradient(135deg,var(--tint) 0 100%),var(--right-image);
 }
 
 .hero::before,
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-repeat: no-repeat;
-  z-index: 0;
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:center;
+  z-index:0;
 }
 
-/* left image: grayscale + white wash */
-.hero::before {
-  background-color: #fff;
+.hero::before{
   background-image:
-    linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)),
+    linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,.4)),
     var(--left-image);
-  background-size: cover, cover;
-  background-position: center center, left center;
-  filter: grayscale(100%);
-  clip-path: polygon(0% 0%, 45% 0%, 35% 100%, 0% 100%);
+  filter:grayscale(100%);
+  clip-path:polygon(0 0,45% 0,35% 100%,0 100%);
 }
 
-/* right image: strong red tint */
-.hero::after {
-  background-image:
-    linear-gradient(135deg, rgba(234,34,37,0.8) 0%, rgba(234,34,37,0.8) 100%),
-    var(--right-image);
-  background-blend-mode: multiply;
-  background-size: cover, cover;
-  background-position: center center, right center;
-  clip-path: polygon(45% 0%, 100% 0%, 100% 100%, 35% 100%);
+.hero::after{
+  background-image:var(--right-tinted);
+  background-blend-mode:multiply;
+  clip-path:polygon(45% 0,100% 0,100% 100%,35% 100%);
 }
 
-/* —— Text container clipped to left trapezoid —— */
-.textContainer {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  clip-path: polygon(0% 0%, 45% 0%, 35% 100%, 0% 100%);
-  display: flex;
-  align-items: center;
-  padding: 2rem 1.5rem;
+/* ------------------------------ */
+/* TEXT AREA                      */
+/* ------------------------------ */
+.textContainer{
+  position:absolute;
+  inset:0;
+  clip-path:polygon(0 0,45% 0,35% 100%,0 100%);
+  display:flex;
+  align-items:center;
+  padding:2rem 1.5rem;
+  z-index:1;
 }
 
-/* —— Message: text “window” with red-tinted photo behind —— */
-.message {
-  display: block;
-  width: 100%;
-  margin: 0;
+.message{
+  margin:0;
+  width:100%;
+  text-align:left;
+  font-family:var(--font-geist-sans,sans-serif);
+  font-weight:800;
+  font-size:clamp(2rem,6vw,4rem);
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-transform:uppercase;
 
-  /* left-aligned styling */
-  text-align: left;
-  font-family: var(--font-geist-sans), sans-serif;
-  font-weight: 800;
-  font-size: clamp(2rem, 6vw, 4rem);
-  line-height: 1.1;
-  letter-spacing: .02em;
-  text-transform: uppercase;
+  /* ── lighter red just for the text ── */
+  --tint:rgba(234,34,37,.35);           /* 35 % opacity = paler red */
 
-  /* make text transparent and fill with red-tinted image */
-  color: transparent;
-  background-image:
-    linear-gradient(
-      135deg,
-      rgba(234, 34, 37, 0.8) 0%,
-      rgba(234, 34, 37, 0.8) 100%
-    ),
-    var(--left-image);
-  background-size:
-    100% 100%,
-    cover;
-  background-position:
-    center center,
-    left center;
-  background-repeat:
-    no-repeat,
-    no-repeat;
-  background-blend-mode: multiply;
+  background-image:var(--left-tinted);
+  background-blend-mode:multiply;
+  background-size:cover;
+  background-position:left center;
+  -webkit-background-clip:text;
+          background-clip:text;
+  color:transparent;
+}
 
-  /* clip the background into the text glyphs */
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+@media (max-width: 768px) {
+  .hero {
+    min-height: 50vh;
+  }
+
+  .hero::before {
+    clip-path: none;
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(100%);
+  }
+
+  .hero::after {
+    display: none;
+  }
+
+  .textContainer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    clip-path: none;
+    display: flex;
+    align-items: center;    /* vertical centering */
+    justify-content: center; /* horizontal centering */
+    padding: 1rem;
+    text-align: center;
+  }
+
+
 }

@@ -4,6 +4,11 @@
   gap: 2rem;
   background: #fff;
   height: 50vh;
+
+  /* constrain width on wide monitors */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .reverse {
@@ -71,11 +76,20 @@
   margin: 0 0 1rem 2rem;
 }
 
+.infoSection.noImage .imageWrap {
+  display: none;
+}
+
+.infoSection.noImage .copy {
+  flex: 1 1 100%;
+}
+
 @media (max-width: 768px) {
   .infoSection,
   .reverse {
     flex-direction: column;
     height: auto;
+    margin: 0 auto; /* still centered, but auto height */
   }
   .imageWrap,
   .copy {

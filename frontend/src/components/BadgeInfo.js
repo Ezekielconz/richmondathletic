@@ -1,4 +1,7 @@
-// components/BadgeInfo.jsx  (server component, no "use client")
+// components/BadgeInfo.jsx
+'use client'
+
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import styles from '../styles/badgeInfo.module.css'
 
@@ -8,58 +11,119 @@ const API_URL =
 const API_PREFIX =
   (process.env.NEXT_PUBLIC_STRAPI_API_PREFIX ?? '/api').replace(/\/?$/, '')
 
-export default async function BadgeInfo() {
-  /* 1 ▸ fetch */
-  const res = await fetch(
-    `${API_URL}${API_PREFIX}/badges?populate=Icon&sort=Order:asc`,
-    { next: { revalidate: 60 * 60 * 4 } }
-  )
-  if (!res.ok) throw new Error('Failed to fetch badges')
-  const { data } = await res.json()
+export default function BadgeInfo() {
+  const [items, setItems] = useState([])
+  const [current, setCurrent] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  /* 2 ▸ normalise */
-  const badgeItems = (data || []).map((entry) => {
-    // Strapi v4 → entry.attributes
-    // Strapi v5 → fields are on the entry itself
-    const attrs = entry.attributes ?? entry ?? {}
+  useEffect(() => {
+    let cancelled = false
 
-    const icon = attrs.Icon ?? attrs.icon
-    const urlPath =
-      icon?.data?.attributes?.url ||                    // v4
-      icon?.data?.url ||                                // v5 (REST)
-      icon?.url || ''                                   // already flattened
-    const src = urlPath.startsWith('http')
-      ? urlPath
-      : urlPath ? `${API_URL}${urlPath}` : ''
+    async function fetchBadges() {
+      try {
+        const res = await fetch(
+          `${API_URL}${API_PREFIX}/badges?populate=Icon&sort=Order:asc`
+        )
+        if (!res.ok) throw new Error('Failed to fetch badges')
+        const { data } = await res.json()
 
-    return {
-      src,
-      title: attrs.Title ?? attrs.title ?? '',
-      caption: attrs.Caption ?? attrs.caption ?? '',
+        const badgeItems = (data || [])
+          .map((entry) => {
+            const attrs = entry.attributes ?? entry
+            const icon = attrs.Icon ?? attrs.icon
+            const urlPath =
+              icon?.data?.attributes?.url ||
+              icon?.data?.url ||
+              icon?.url ||
+              ''
+            const src = urlPath
+              ? urlPath.startsWith('http')
+                ? urlPath
+                : `${API_URL}${urlPath}`
+              : ''
+            return {
+              src,
+              title: attrs.Title ?? attrs.title ?? '',
+              caption: attrs.Caption ?? attrs.caption ?? '',
+            }
+          })
+          .filter((item) => item.src)
+
+        if (!cancelled) {
+          setItems(badgeItems)
+          setLoading(false)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err)
+          setLoading(false)
+        }
+      }
     }
-  })
 
-  if (badgeItems.length === 0) return null
+    fetchBadges()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
-  /* 3 ▸ render */
+  if (loading) return null
+  if (error) return <div>Unable to load badges.</div>
+  if (items.length === 0) return null
+
+  const prev = () => setCurrent((c) => (c - 1 + items.length) % items.length)
+  const next = () => setCurrent((c) => (c + 1) % items.length)
+  const { src, title, caption } = items[current]
+
   return (
     <section className={styles.badgeSection}>
+      {/* desktop view */}
       <div className={styles.container}>
-        {badgeItems.map((item, i) => (
+        {items.map((item, i) => (
           <div key={i} className={styles.badgeItem}>
-            {item.src && (
-              <Image
-                src={item.src}
-                alt={item.title}
-                width={60}
-                height={60}
-                className={styles.icon}
-              />
-            )}
+            <Image
+              src={item.src}
+              alt={item.title}
+              width={60}
+              height={60}
+              className={styles.icon}
+            />
             <h3 className={styles.title}>{item.title}</h3>
             {item.caption && <p className={styles.caption}>{item.caption}</p>}
           </div>
         ))}
+      </div>
+
+      {/* mobile carousel */}
+      <div className={styles.carouselContainer}>
+        <button
+          className={styles.arrow}
+          onClick={prev}
+          aria-label="Previous badge"
+        >
+          ‹
+        </button>
+
+        <div className={styles.carouselItem}>
+          <Image
+            src={src}
+            alt={title}
+            width={60}
+            height={60}
+            className={styles.icon}
+          />
+          <h3 className={styles.title}>{title}</h3>
+          {caption && <p className={styles.caption}>{caption}</p>}
+        </div>
+
+        <button
+          className={styles.arrow}
+          onClick={next}
+          aria-label="Next badge"
+        >
+          ›
+        </button>
       </div>
     </section>
   )
