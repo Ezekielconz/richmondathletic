@@ -1,3 +1,5 @@
+// lib/strapi.js
+
 /* ──────────────────────────────────────────────
    Universal Strapi helper — no external deps
    ────────────────────────────────────────────── */
@@ -7,24 +9,18 @@ const API_URL =
   'http://localhost:1337';
 
 const API_PREFIX =
-  // ''  -> Strapi v3
-  // '/api' (default) -> Strapi v4/5
   (process.env.NEXT_PUBLIC_STRAPI_API_PREFIX ?? '/api').replace(/\/?$/, '');
 
 const TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
 
-/* Convert params → Strapi query string */
 function toQuery(params = {}) {
   const q = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
     if (value == null) return;
-
     if (Array.isArray(value)) {
-      // e.g. { sort: ['level:asc', 'sortOrder:asc'] }
       value.forEach((v) => q.append(key, v));
     } else if (typeof value === 'object') {
-      // e.g. populate: { logo: '*' }
       Object.entries(value).forEach(([k, v]) =>
         q.append(`${key}[${k}]`, v)
       );
@@ -54,7 +50,7 @@ export async function fetchStrapi(path, options = {}) {
     params = {},
     method = 'GET',
     headers = {},
-    next = { revalidate: 60 * 60 * 4 }, // 4 h ISR
+    next = { revalidate: 60 * 60 * 4 },
     ...rest
   } = options;
 
@@ -73,7 +69,6 @@ export async function fetchStrapi(path, options = {}) {
   });
 
   if (res.status === 404) {
-    // single-type not created yet → return empty
     if (process.env.NODE_ENV === 'development')
       console.warn('[Strapi] 404 – returning empty data for', url);
     return { data: null };
@@ -93,10 +88,8 @@ export async function fetchStrapi(path, options = {}) {
 export function getMediaURL(mediaLike) {
   const maybeData = mediaLike?.data ?? mediaLike;
   const url =
-    // v4
-    maybeData?.attributes?.url ??
-    // v5
-    maybeData?.url;
+    maybeData?.attributes?.url ?? // v4
+    maybeData?.url;                // v5
 
   if (!url) return null;
   return url.startsWith('http') ? url : `${API_URL}${url}`;
@@ -110,7 +103,6 @@ export async function getHeroSettings() {
   const res = await fetchStrapi('/hero-setting', {
     params: { populate: '*' },
   });
-
   const entry = res.data?.attributes ?? res.data ?? {};
 
   return {
@@ -123,13 +115,37 @@ export async function getBadgeItems() {
   const res = await fetchStrapi('/badges', {
     params: { populate: 'Icon', sort: 'Order:asc' },
   });
-
   return (res.data || []).map((item) => {
     const attrs = item.attributes ?? item;
     return {
       src: getMediaURL(attrs.Icon),
       title: attrs.Title,
       caption: attrs.Caption,
+    };
+  });
+}
+
+/**
+ * Fetch all "Info Section" entries (populating the Image field
+ * and sorting by Order), and map them into plain objects for
+ * your InfoSection component.
+ */
+export async function getInfoSections() {
+  const res = await fetchStrapi('/info-sections', {
+    params: {
+      populate:   'Image',
+      sort:       'Order:asc',         
+      pagination: { pageSize: 100 },  
+    },
+  });
+
+  return (res.data || []).map((item) => {
+    const attrs = item.attributes ?? item;
+    return {
+      title:    attrs.Title  ?? attrs.title,
+      body:     attrs.Body   ?? attrs.body,
+      imageSrc: getMediaURL(attrs.Image),
+      order:    attrs.Order  ?? attrs.order,
     };
   });
 }
