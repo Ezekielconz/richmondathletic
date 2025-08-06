@@ -1,11 +1,11 @@
+// src/app/sponsors/page.js
 import SponsorsSection             from '@/components/SponsorsSection';
 import { fetchStrapi, getMediaURL } from '@/lib/strapi';
 import styles                       from '@/styles/sponsorsPage.module.css';
 
-/* Render on demand so a Strapi hic-cup never breaks the build */
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'; // don’t break the build if Strapi is down
 
-/* Enum ➜ nice heading */
+/* Enum value  ➜  nice heading */
 const LEVEL_LABELS = {
   'major-club':    'Major Club Sponsor',
   'club':          'Club Sponsors',
@@ -23,27 +23,39 @@ const LEVEL_ORDER = [
   'funding-trust',
 ];
 
-/** Fetch sponsors once, group by level, and map to the UI shape */
+/** Pull every sponsor, group by level, return the UI-friendly shape */
 async function getSponsorsGrouped() {
+  // ← populate='*' ensures Strapi will include your Logo media field
   const json = await fetchStrapi('/sponsors', {
-    params: {
-      populate: 'logo',
-      sort: 'level:asc',          // ← sortOrder removed
-    },
-    next: { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
+    params: { populate: '*' },
+    next:   { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
   });
 
   const groups = {};
+
   (json.data || []).forEach((item) => {
-    const { name, url, blurb, level } = item.attributes;
-    const logo = getMediaURL(item.attributes.logo);
-    (groups[level] ||= []).push({ name, url, blurb, logo });
+    // item.attributes for v4, or item itself for v5
+    const attrs = item.attributes ?? item;
+
+    const sponsor = {
+      name:  attrs.name ?? attrs.Name ?? '',
+      url:   attrs.websiteURL ?? attrs.WebsiteURL ?? attrs.url ?? '',
+      blurb: attrs.blurb ?? attrs.Blurb ?? '',
+      logo:  getMediaURL(
+                // v4: attrs.logo.data, v5: attrs.Logo
+                attrs.logo?.data ?? attrs.Logo
+              ),
+    };
+
+    const level = attrs.level ?? attrs.Level ?? 'club';
+    (groups[level] ||= []).push(sponsor);
   });
 
+  // turn { 'major-club': […], … } → [ { level: 'Major Club Sponsor', sponsors: […] }, … ]
   return LEVEL_ORDER
     .filter((lvl) => groups[lvl]?.length)
     .map((lvl) => ({
-      level : LEVEL_LABELS[lvl],
+      level: LEVEL_LABELS[lvl],
       sponsors: groups[lvl],
     }));
 }
@@ -54,6 +66,7 @@ export const metadata = {
 
 export default async function SponsorsPage() {
   let sponsorGroups = [];
+
   try {
     sponsorGroups = await getSponsorsGrouped();
   } catch (err) {

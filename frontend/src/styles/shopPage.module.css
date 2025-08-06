@@ -1,18 +1,24 @@
-.page { background: #fafafa; }
-
-.hero {
-  padding: 4rem 1.5rem 2rem;
-  text-align: center;
+.page {
+  background: #fafafa;
+  min-height: 80vh;       /* ensure at least 80% of viewport height */
+  color: #000;
 }
 
-.hero h1 {
+.heading {
+  padding: 4rem 1.5rem 2rem;
+  text-align: center;
   font-family: var(--font-oswald), sans-serif;
   font-size: clamp(2rem, 6vw, 3rem);
   text-transform: uppercase;
   margin: 0 0 0.5rem;
+  color: #D60000;
 }
 
-.hero p { line-height: 1.5; }
+.subheading {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 300;
+}
 
 .grid {
   display: grid;
@@ -26,4 +32,6 @@
 .empty {
   text-align: center;
   padding: 3rem 1.5rem;
+  color: #555;
+  font-style: italic;
 }

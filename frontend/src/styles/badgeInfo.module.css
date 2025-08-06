@@ -33,7 +33,7 @@
 .icon {
   width: 60px;               /* fixed box for every icon */
   height: 60px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2rem;
 
   object-fit: contain;       /* preserve aspect ratio */
   object-position: center;   /* center the image within its box */

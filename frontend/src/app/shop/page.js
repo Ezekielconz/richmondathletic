@@ -1,26 +1,48 @@
+// src/app/shop/page.js
 import ProductCard                 from '@/components/ProductCard';
 import { fetchStrapi, getMediaURL } from '@/lib/strapi';
 import styles                       from '@/styles/shopPage.module.css';
 
 export const dynamic = 'force-dynamic';
 
+/** Fetch all products (with image) and map into plain objects */
 async function getProducts() {
-  const json = await fetchStrapi('/products', {
+  const res = await fetchStrapi('/products', {
     params: {
-      populate: 'image',
-      sort: 'createdAt:asc',      // ← previously sortOrder
+      // catch-all populate so your Image relation is included
+      populate: '*',
+      // sort ascending by creation date
+      sort: ['createdAt:asc'],
     },
     next: { revalidate: 60 * 60 * 4, tags: ['products'] },
   });
 
-  return (json.data || []).map((item) => ({
-    ...item.attributes,
-    image: getMediaURL(item.attributes.image),
-  }));
+  return (res.data || []).map((item) => {
+    // v4 uses item.attributes, v5 may be flattened
+    const attrs = item.attributes ?? item;
+
+    // media may live under .data (v4) or directly (v5)
+    const media =
+      attrs.image?.data ??
+      attrs.Image?.data ??
+      attrs.image ??
+      attrs.Image;
+
+    return {
+      // normalize your fields (handle casing differences if any)
+      name:    attrs.name    ?? attrs.Name    ?? '',
+      price:   attrs.price   ?? attrs.Price   ?? 0,
+      variant: attrs.variant ?? attrs.Variant ?? '',
+      slug:    attrs.slug    ?? attrs.Slug    ?? String(item.id),
+      // turn that media blob into an absolute URL (or null)
+      image:   getMediaURL(media),
+    };
+  });
 }
 
 export default async function ShopPage() {
   let products = [];
+
   try {
     products = await getProducts();
   } catch (err) {
@@ -29,16 +51,20 @@ export default async function ShopPage() {
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.heading}>Club Shop</h1>
+      <header className={styles.hero}>
+        <h1 className={styles.heading}>Richmond FC Club Shop</h1>
+      </header>
 
       {products.length ? (
         <div className={styles.grid}>
           {products.map((p) => (
-            <ProductCard key={p.slug} product={p} />
+            <ProductCard key={p.slug} {...p} />
           ))}
         </div>
       ) : (
-        <p className={styles.notice}>Products coming soon—check back later!</p>
+        <p className={styles.empty}>
+          Products coming soon—check back later!
+        </p>
       )}
     </main>
   );
