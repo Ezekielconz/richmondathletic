@@ -1,3 +1,5 @@
+// SponsorsSection.jsx
+
 'use client';
 
 import Image from 'next/image';
@@ -44,32 +46,33 @@ export default function SponsorsSection({ level, sponsors }) {
         </div>
       ) : (
         <div className={styles.grid}>
-          {sponsors.map((sponsor) => (
-            <div key={sponsor.name} className={styles.card}>
-              {sponsor.url ? (
-                <Link href={sponsor.url} target="_blank" rel="noopener">
-                  <Image
-                    src={sponsor.logo || PLACEHOLDER}
-                    alt={sponsor.name}
-                    width={200}
-                    height={120}
-                    className={styles.logo}
-                  />
-                </Link>
-              ) : (
+          {sponsors.map((sponsor) =>
+            sponsor.url ? (
+              <Link
+                key={sponsor.name}
+                href={sponsor.url}
+                target="_blank"
+                rel="noopener"
+              >
                 <Image
                   src={sponsor.logo || PLACEHOLDER}
                   alt={sponsor.name}
-                    width={200}
-                    height={120}
+                  width={200}
+                  height={120}
                   className={styles.logo}
                 />
-              )}
-              {sponsor.blurb && (
-                <p className={styles.blurb}>{sponsor.blurb}</p>
-              )}
-            </div>
-          ))}
+              </Link>
+            ) : (
+              <Image
+                key={sponsor.name}
+                src={sponsor.logo || PLACEHOLDER}
+                alt={sponsor.name}
+                width={200}
+                height={120}
+                className={styles.logo}
+              />
+            )
+          )}
         </div>
       )}
     </section>

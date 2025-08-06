@@ -1,3 +1,5 @@
+/* sponsorsSection.module.css */
+
 .section {
   padding: 3rem 1rem;
   text-align: center;
@@ -57,27 +59,26 @@
   text-align: left;
 }
 
-/* === Default Grid for Other Levels === */
+
+/* === Grid for Other Levels (logos only) === */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 3rem;
   max-width: 1200px;
   margin: 0 auto;
+  justify-items: center; /* center logos in their cells */
 }
 
-.card {
-  background: #fff;
-  border-radius: 0.5rem;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-  padding: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Make all grid logos grayscale by default, with a smooth transition */
+.grid .logo {
+  filter: grayscale(100%);
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 20px;
+/* On hover (whether the image itself or its link), restore color and zoom in */
+.grid a:hover .logo,
+.grid .logo:hover {
+  filter: grayscale(0%);
+  transform: scale(1.05);
 }
