@@ -5,10 +5,14 @@
   background: #191919;
   border-radius: 20px;
   overflow: hidden;
-
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .card::before {
@@ -21,6 +25,7 @@
   transform: skewY(345deg);
   transition: transform 0.5s ease, top 0.5s ease;
 }
+
 .card:hover::before {
   top: -70%;
   transform: skewY(390deg);
@@ -30,10 +35,11 @@
   content: "RAFC";
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   font-weight: 600;
   font-size: 6em;
-  color: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.2);
   z-index: 0;
 }
 
@@ -43,18 +49,22 @@
   height: 300px;
   box-sizing: border-box;
   padding: 0.5rem;
-
-  /* move it down a bit */
   margin-top: 3rem;
-
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
+  overflow: visible;
 }
 
 .imgWrap :global(img) {
   object-fit: contain;
+  transition: transform 0.3s ease;
+  transform-origin: center center;
+}
+
+.card:hover .imgWrap :global(img) {
+  transform: scale(1.1);
 }
 
 .noImage {

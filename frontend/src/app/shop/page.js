@@ -5,23 +5,14 @@ import styles                       from '@/styles/shopPage.module.css';
 
 export const dynamic = 'force-dynamic';
 
-/** Fetch all products (with image) and map into plain objects */
 async function getProducts() {
   const res = await fetchStrapi('/products', {
-    params: {
-      // catch-all populate so your Image relation is included
-      populate: '*',
-      // sort ascending by creation date
-      sort: ['createdAt:asc'],
-    },
+    params: { populate: '*', sort: ['createdAt:asc'] },
     next: { revalidate: 60 * 60 * 4, tags: ['products'] },
   });
 
   return (res.data || []).map((item) => {
-    // v4 uses item.attributes, v5 may be flattened
     const attrs = item.attributes ?? item;
-
-    // media may live under .data (v4) or directly (v5)
     const media =
       attrs.image?.data ??
       attrs.Image?.data ??
@@ -29,12 +20,10 @@ async function getProducts() {
       attrs.Image;
 
     return {
-      // normalize your fields (handle casing differences if any)
       name:    attrs.name    ?? attrs.Name    ?? '',
       price:   attrs.price   ?? attrs.Price   ?? 0,
       variant: attrs.variant ?? attrs.Variant ?? '',
       slug:    attrs.slug    ?? attrs.Slug    ?? String(item.id),
-      // turn that media blob into an absolute URL (or null)
       image:   getMediaURL(media),
     };
   });
@@ -52,7 +41,12 @@ export default async function ShopPage() {
   return (
     <main className={styles.page}>
       <header className={styles.hero}>
-        <h1 className={styles.heading}>Richmond FC Club Shop</h1>
+        <h1 className={styles.heading}>
+          Richmond FC Club Shop
+        </h1>
+        <p className={styles.subheading}>
+          Contact Stu Reid to order – stu.reid11@gmail.com
+        </p>
       </header>
 
       {products.length ? (

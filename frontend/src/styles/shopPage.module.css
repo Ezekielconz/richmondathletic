@@ -14,10 +14,13 @@
   color: #D60000;
 }
 
+/* newly added */
 .subheading {
-  margin: 0;
+  margin: 0 0 2rem;       /* add some breathing room below */
   font-size: 1.125rem;
   font-weight: 300;
+  text-align: center;
+  color: #333;            /* adjust to taste */
 }
 
 .grid {
