@@ -1,42 +1,45 @@
 /* styles/badgeInfo.module.css */
 
 .badgeSection {
-  background: #EA2225;
+  background-color: rgb(243, 44, 48);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='rgb(234,34,37)' viewBox='0 0 100 169.5'%3E%3Cpolygon points='50,34.75 93.5,59.75 93.5,109.75 50,134.75 6.5,109.75 6.5,59.75'%3E%3C/polygon%3E%3Cpolygon points='0,-50 43.5,-25 43.5,25 0,50 -43.5,25 -43.5,-25'%3E%3C/polygon%3E%3Cpolygon points='100,-50 143.5,-25 143.5,25 100,50 56.5,25 56.5,-25'%3E%3C/polygon%3E%3Cpolygon points='0,119.5 43.5,144.5 43.5,194.5 0,219.5 -43.5,194.5 -43.5,144.5'%3E%3C/polygon%3E%3Cpolygon points='100,119.5 143.5,144.5 143.5,194.5 100,219.5 56.5,194.5 56.5,144.5'%3E%3C/polygon%3E%3C/svg%3E"),
+    radial-gradient(circle at center, rgba(243, 44, 48, 1) 0%, rgba(234, 34, 37, 1) 100%);
+  background-repeat: repeat, no-repeat;
+  background-position: center center, center center;
+  background-size: 64px, cover;
   padding: 3rem 1.5rem;
   color: white;
-
-  /* center everything inside this red section */
   display: flex;
-  justify-content: center;   /* horizontal centering */
-  align-items: center;       /* vertical centering */
+  justify-content: center;
+  align-items: center;
 }
 
 .container {
   display: flex;
-  flex-wrap: nowrap;         /* keep all badges in one row */
-  justify-content: center;   /* center badges row horizontally */
-  align-items: stretch;      /* force each badge to match height */
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
   gap: 3rem;
   max-width: 1200px;
-  width: 100%;               /* let it shrink/grow with section */
-  overflow-x: auto;          /* allow scroll on narrow screens */
+  width: 100%;
+  overflow-x: auto;
 }
 
 .badgeItem {
   display: flex;
-  flex-direction: column;    /* stack icon, title, caption */
-  align-items: center;       /* center them horizontally */
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   max-width: 180px;
 }
 
 .icon {
-  width: 60px;               /* fixed box for every icon */
+  width: 60px;
   height: 60px;
   margin-bottom: 2rem;
-
-  object-fit: contain;       /* preserve aspect ratio */
-  object-position: center;   /* center the image within its box */
+  object-fit: contain;
+  object-position: center;
 }
 
 .title {
@@ -49,7 +52,7 @@
 
 .caption {
   font-family: var(--font-oswald), sans-serif;
-  font-weight: 200; /* extra light */
+  font-weight: 200;
   font-size: 0.75rem;
   margin: 0.25rem 0 0.5rem;
 }
