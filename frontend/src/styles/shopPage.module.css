@@ -14,18 +14,19 @@
   color: #D60000;
 }
 
-/* newly added */
 .subheading {
-  margin: 0 0 2rem;       /* add some breathing room below */
+  margin: 0 0 2rem;       /* breathing room below */
   font-size: 1.125rem;
   font-weight: 300;
   text-align: center;
-  color: #333;            /* adjust to taste */
+  color: #333;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  /* never shrink below 320px, but stretch to fill */
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  justify-items: center;    /* center each card in its cell */
   gap: 1.5rem;
   max-width: 1200px;
   margin: 0 auto 4rem;

@@ -1,9 +1,7 @@
-/* src/styles/sponsorsSection.module.css */
-
 .section {
   padding: 3rem 1rem;
   text-align: center;
-  min-height: 80vh;
+  min-height: 60vh;
 }
 
 /* alternate background stripes */
@@ -20,6 +18,46 @@
   color: #111;
 }
 
+/* === Major Sponsor Layout === */
+.majorWrapper {
+  display: flex;
+  align-items: center;
+  /* span full width but max at 1200px */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  gap: 2rem;
+}
+
+.majorCard {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.blurb {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #444;
+  /* default center in grid cards */
+  text-align: center;
+}
+
+/* override for major: left-align text */
+.majorCard .blurb {
+  text-align: left;
+}
+
+/* === Default Grid for Other Levels === */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -42,21 +80,4 @@
 .card:hover {
   transform: translateY(-4px) scale(1.02);
   box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 20px;
-}
-
-.logo {
-  width: 100%;
-  height: auto;
-  max-height: 120px;
-  object-fit: contain;
-  object-position: center;
-}
-
-.blurb {
-  font-family: var(--font-geist-sans), sans-serif;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  margin-top: 0.5rem;
-  color: #444;
-  text-align: center;
 }

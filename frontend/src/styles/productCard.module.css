@@ -1,6 +1,7 @@
 .card {
   position: relative;
-  width: 320px;
+  width: 100%;           /* fill its grid cell */
+  max-width: 320px;      /* but never exceed 320px */
   height: 480px;
   background: #191919;
   border-radius: 20px;
@@ -50,10 +51,12 @@
   box-sizing: border-box;
   padding: 0.5rem;
   margin-top: 3rem;
+
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1;
+
   overflow: visible;
 }
 
