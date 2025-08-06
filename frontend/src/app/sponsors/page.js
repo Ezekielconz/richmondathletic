@@ -2,10 +2,10 @@ import SponsorsSection             from '@/components/SponsorsSection';
 import { fetchStrapi, getMediaURL } from '@/lib/strapi';
 import styles                       from '@/styles/sponsorsPage.module.css';
 
-/* Render on demand so the build never fails */
+/* Render on demand so a Strapi hic-cup never breaks the build */
 export const dynamic = 'force-dynamic';
 
-/* Map enum ➜ heading */
+/* Enum ➜ nice heading */
 const LEVEL_LABELS = {
   'major-club':    'Major Club Sponsor',
   'club':          'Club Sponsors',
@@ -14,7 +14,7 @@ const LEVEL_LABELS = {
   'funding-trust': 'Funding Foundations & Trusts',
 };
 
-/* Desired display order */
+/* Hard-coded display order */
 const LEVEL_ORDER = [
   'major-club',
   'club',
@@ -23,11 +23,12 @@ const LEVEL_ORDER = [
   'funding-trust',
 ];
 
+/** Fetch sponsors once, group by level, and map to the UI shape */
 async function getSponsorsGrouped() {
   const json = await fetchStrapi('/sponsors', {
     params: {
       populate: 'logo',
-      sort: 'level:asc,sortOrder:asc', // ✅ valid multi-sort string
+      sort: 'level:asc',          // ← sortOrder removed
     },
     next: { revalidate: 60 * 60 * 4, tags: ['sponsors'] },
   });
@@ -42,7 +43,7 @@ async function getSponsorsGrouped() {
   return LEVEL_ORDER
     .filter((lvl) => groups[lvl]?.length)
     .map((lvl) => ({
-      level: LEVEL_LABELS[lvl],
+      level : LEVEL_LABELS[lvl],
       sponsors: groups[lvl],
     }));
 }
