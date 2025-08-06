@@ -1,8 +1,9 @@
+// src/components/SponsorsSection.jsx
 'use client';
 
 import Image from 'next/image';
-import Link   from 'next/link';
-import styles from '../styles/sponsorsSection.module.css';
+import Link  from 'next/link';
+import styles from '@/styles/sponsorsSection.module.css';
 
 const PLACEHOLDER = '/sponsors/placeholder.svg';
 
@@ -10,32 +11,32 @@ export default function SponsorsSection({ level, sponsors }) {
   return (
     <section className={styles.section}>
       <h2 className={styles.heading}>{level}</h2>
-
       <div className={styles.grid}>
-        {sponsors.map((s) => (
-          <div key={s.name} className={styles.card}>
-            {s.url ? (
-              <Link href={s.url} target="_blank" rel="noopener">
+        {sponsors.map((sponsor) => (
+          <div key={sponsor.name} className={styles.card}>
+            {sponsor.url ? (
+              <Link href={sponsor.url} target="_blank" rel="noopener">
                 <Image
-                  src={s.logo || PLACEHOLDER}
-                  alt={s.name}
-                  fill
-                  sizes="(min-width:768px) 200px, 40vw"
+                  src={sponsor.logo || PLACEHOLDER}
+                  alt={sponsor.name}
+                  width={200}
+                  height={120}
                   className={styles.logo}
                   priority={level === 'Major Club Sponsor'}
                 />
               </Link>
             ) : (
               <Image
-                src={s.logo || PLACEHOLDER}
-                alt={s.name}
-                fill
-                sizes="(min-width:768px) 200px, 40vw"
+                src={sponsor.logo || PLACEHOLDER}
+                alt={sponsor.name}
+                width={200}
+                height={120}
                 className={styles.logo}
               />
             )}
-
-            {s.blurb && <p className={styles.blurb}>{s.blurb}</p>}
+            {sponsor.blurb && (
+              <p className={styles.blurb}>{sponsor.blurb}</p>
+            )}
           </div>
         ))}
       </div>
